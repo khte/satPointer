@@ -32,8 +32,10 @@
 2017-12-01 KHT ... 
 """
 
-import Tkinter
+import matplotlib.pyplot as plt
 
 class visualRep():
 	def __init__:
 		self.test = 0
+	
+	
