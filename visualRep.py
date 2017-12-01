@@ -33,3 +33,7 @@
 """
 
 import Tkinter
+
+class visualRep():
+	def __init__:
+		self.test = 0
