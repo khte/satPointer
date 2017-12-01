@@ -35,7 +35,7 @@
 import matplotlib.pyplot as plt
 
 class visualRep():
-	def __init__:
+	def __init__(self):
 		self.test = 0
 	
 	

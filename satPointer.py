@@ -32,7 +32,51 @@
 2017-12-01 KHT ... 
 """
 
+#Imports
+import math
+from lib.utm import utmconv #Geodetic to UTM conversion class created by Kjeld Jensen
 
-
+class satPointer():
+	def __init__(self):
+		test = 0
+	
+	def calcYawAngle(self, discPosX, discPosY): #Assumes uav to be the center of the world, calculates relative angle to disc with north as reference
+		yawAngle = math.degrees(math.atan2(discPosX, discPosY))
+		if yawAngle < 0:
+			yawAngle = 360 + yawAngle
+		return yawAngle
+	
+	def calcPitchAngle(self, discRelAlt, discDist):
+		pitchAngle = math.degrees(math.atan2(discDist, discRelAlt))
+		return pitchAngle
+		
+class coordinateManipulation():
+	def __init__(self):
+		self.uc = utmconv()
+		self.uavEasting = 0
+		self.uavNorthing = 0
+		self.discEasting = 0
+		self.discNorthing = 0
+	
+	def calcRelativePlanePos(self, uavLat, uavLon, discLat, discLon):
+		(_, _, _, self.uavEasting, self.uavNorthing) = self.uc.geodetic_to_utm(uavLat, uavLon)
+		(_, _, _, self.discEasting, self.discNorthing) = self.uc.geodetic_to_utm(discLat, discLon)
+		eastingDiff = self.discEasting - self.uavEasting
+		northingDiff = self.discNorthing - self.uavNorthing
+		return eastingDiff, northingDiff
+	
+	def calcDistAndHeightDiff(self, uavAlt, discAlt):
+		dist = math.hypot(self.discEasting - self.uavEasting, self.discNorthing - self.uavNorthing)
+		relAlt = discAlt - uavAlt
+		return dist, relAlt
+	
 if __name__ == "__main__":
-	print "test"
+	sp = satPointer()
+	cm = coordinateManipulation()
+	
+	posX, posY = cm.calcRelativePlanePos(55.366661, 10.431477, 55.367615, 10.432678)
+	dist, relAlt = cm.calcDistAndHeightDiff(30, 10)
+	print dist, relAlt
+	
+	print sp.calcYawAngle(posX, posY)
+	print sp.calcPitchAngle(relAlt, dist)
